@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<title>Calculadora de Yeso</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 0 15px rgba(0,0,0,0.1);
+width:320px;
+}
+
+h2{
+text-align:center;
+margin-bottom:20px;
+}
+
+input,select{
+width:100%;
+padding:8px;
+margin-top:5px;
+margin-bottom:15px;
+border-radius:5px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:10px;
+background:#2c7be5;
+color:white;
+border:none;
+border-radius:5px;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1a5dc9;
+}
+
+.resultado{
+margin-top:20px;
+background:#f1f1f1;
+padding:10px;
+border-radius:5px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Calculadora de Yeso</h2>
+
+<label>Tipo de molde</label>
+
+<select id="tipoMolde" onchange="cambiarTipo()">
+<option value="rectangular">Rectangular</option>
+<option value="circular">Circular</option>
+</select>
+
+<div id="rectangular">
+
+<label>Largo (cm)</label>
+<input type="number" id="largo">
+
+<label>Ancho (cm)</label>
+<input type="number" id="ancho">
+
+<label>Profundidad (cm)</label>
+<input type="number" id="profundidad">
+
+</div>
+
+<div id="circular" style="display:none">
+
+<label>Radio de la pieza (cm)</label>
+<input type="number" id="radioPieza">
+
+<label>Radio del molde (cm)</label>
+<input type="number" id="radioMolde">
+
+<label>Altura de la pieza (cm)</label>
+<input type="number" id="alturaPieza">
+
+<label>Altura del molde (cm)</label>
+<input type="number" id="alturaMolde">
+
+</div>
+
+<button onclick="calcular()">Calcular</button>
+
+<div class="resultado">
+
+Agua necesaria: <b><span id="agua">0</span> ml (cm³)</b><br><br>
+Yeso necesario: <b><span id="yeso">0</span> g</b>
+
+</div>
+
+</div>
+
+<script>
+
+function cambiarTipo(){
+
+var tipo=document.getElementById("tipoMolde").value;
+
+if(tipo=="rectangular"){
+document.getElementById("rectangular").style.display="block";
+document.getElementById("circular").style.display="none";
+}else{
+document.getElementById("rectangular").style.display="none";
+document.getElementById("circular").style.display="block";
+}
+
+}
+
+function calcular(){
+
+var tipo=document.getElementById("tipoMolde").value;
+
+var volumen=0;
+
+if(tipo=="rectangular"){
+
+var largo=document.getElementById("largo").value;
+var ancho=document.getElementById("ancho").value;
+var profundidad=document.getElementById("profundidad").value;
+
+volumen=(largo*ancho*profundidad)/1.3;
+
+}else{
+
+var rp=document.getElementById("radioPieza").value;
+var rm=document.getElementById("radioMolde").value;
+var ap=document.getElementById("alturaPieza").value;
+var am=document.getElementById("alturaMolde").value;
+
+var volumenMolde=Math.PI*rm*rm*am;
+var volumenPieza=Math.PI*rp*rp*ap;
+
+volumen=(volumenMolde-volumenPieza)/1.3;
+
+}
+
+var agua=volumen;
+var yeso=(agua*100)/75;
+
+document.getElementById("agua").innerText=agua.toFixed(2);
+document.getElementById("yeso").innerText=yeso.toFixed(2);
+
+}
+
+</script>
+
+</body>
+</html>
