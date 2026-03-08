@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta charset="UTF-8">
 <title>Calculadora de Yeso</title>
 
 <style>
 
+:root{
+--bg:#f4f4f4;
+--card:#ffffff;
+--text:#222;
+--accent:#2c7be5;
+}
+
+body.dark{
+--bg:#1e1e1e;
+--card:#2b2b2b;
+--text:#f1f1f1;
+--accent:#4c8dff;
+}
+
 body{
 font-family:Arial;
-background:#f4f4f4;
+background:var(--bg);
+color:var(--text);
 display:flex;
 justify-content:center;
 align-items:center;
@@ -18,11 +32,11 @@ margin:0;
 }
 
 .card{
-background:white;
+background:var(--card);
 padding:30px;
-border-radius:10px;
-box-shadow:0 0 15px rgba(0,0,0,0.1);
-width:320px;
+border-radius:12px;
+box-shadow:0 0 20px rgba(0,0,0,0.15);
+width:340px;
 }
 
 h2{
@@ -30,39 +44,57 @@ text-align:center;
 margin-bottom:20px;
 }
 
+label{
+font-size:14px;
+}
+
 input,select{
 width:100%;
-padding:8px;
+padding:10px;
 margin-top:5px;
 margin-bottom:15px;
-border-radius:5px;
+border-radius:6px;
 border:1px solid #ccc;
+box-sizing:border-box;
+font-size:14px;
 }
 
 button{
 width:100%;
 padding:10px;
-background:#2c7be5;
+background:var(--accent);
 color:white;
 border:none;
-border-radius:5px;
-font-size:16px;
+border-radius:6px;
+font-size:15px;
 cursor:pointer;
+margin-top:5px;
 }
 
 button:hover{
-background:#1a5dc9;
+opacity:0.9;
+}
+
+.row{
+display:flex;
+gap:10px;
+margin-top:10px;
 }
 
 .resultado{
 margin-top:20px;
-background:#f1f1f1;
-padding:10px;
-border-radius:5px;
+background:rgba(0,0,0,0.05);
+padding:12px;
+border-radius:6px;
+font-size:15px;
+}
+
+.smallbtn{
+font-size:13px;
+padding:8px;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -73,7 +105,7 @@ border-radius:5px;
 
 <label>Tipo de molde</label>
 
-<select id="tipoMolde" onchange="cambiarTipo()">
+<select id="tipoMolde" onchange="cambiarTipo();calcular();">
 <option value="rectangular">Rectangular</option>
 <option value="circular">Circular</option>
 </select>
@@ -81,38 +113,50 @@ border-radius:5px;
 <div id="rectangular">
 
 <label>Largo (cm)</label>
-<input type="number" id="largo">
+<input type="number" id="largo" oninput="calcular()">
 
 <label>Ancho (cm)</label>
-<input type="number" id="ancho">
+<input type="number" id="ancho" oninput="calcular()">
 
 <label>Profundidad (cm)</label>
-<input type="number" id="profundidad">
+<input type="number" id="profundidad" oninput="calcular()">
 
 </div>
 
 <div id="circular" style="display:none">
 
 <label>Radio de la pieza (cm)</label>
-<input type="number" id="radioPieza">
+<input type="number" id="radioPieza" oninput="calcular()">
 
 <label>Radio del molde (cm)</label>
-<input type="number" id="radioMolde">
+<input type="number" id="radioMolde" oninput="calcular()">
 
 <label>Altura de la pieza (cm)</label>
-<input type="number" id="alturaPieza">
+<input type="number" id="alturaPieza" oninput="calcular()">
 
 <label>Altura del molde (cm)</label>
-<input type="number" id="alturaMolde">
+<input type="number" id="alturaMolde" oninput="calcular()">
 
 </div>
-
-<button onclick="calcular()">Calcular</button>
 
 <div class="resultado">
 
 Agua necesaria: <b><span id="agua">0</span> ml (cm³)</b><br><br>
 Yeso necesario: <b><span id="yeso">0</span> g</b>
+
+</div>
+
+<div class="row">
+
+<button class="smallbtn" onclick="copiar()">Copiar resultado</button>
+
+<button class="smallbtn" onclick="limpiar()">Limpiar</button>
+
+</div>
+
+<div class="row">
+
+<button class="smallbtn" onclick="modoOscuro()">Modo oscuro</button>
 
 </div>
 
@@ -142,18 +186,18 @@ var volumen=0;
 
 if(tipo=="rectangular"){
 
-var largo=document.getElementById("largo").value;
-var ancho=document.getElementById("ancho").value;
-var profundidad=document.getElementById("profundidad").value;
+var largo=document.getElementById("largo").value||0;
+var ancho=document.getElementById("ancho").value||0;
+var profundidad=document.getElementById("profundidad").value||0;
 
 volumen=(largo*ancho*profundidad)/1.3;
 
 }else{
 
-var rp=document.getElementById("radioPieza").value;
-var rm=document.getElementById("radioMolde").value;
-var ap=document.getElementById("alturaPieza").value;
-var am=document.getElementById("alturaMolde").value;
+var rp=document.getElementById("radioPieza").value||0;
+var rm=document.getElementById("radioMolde").value||0;
+var ap=document.getElementById("alturaPieza").value||0;
+var am=document.getElementById("alturaMolde").value||0;
 
 var volumenMolde=Math.PI*rm*rm*am;
 var volumenPieza=Math.PI*rp*rp*ap;
@@ -167,6 +211,31 @@ var yeso=(agua*100)/75;
 
 document.getElementById("agua").innerText=agua.toFixed(2);
 document.getElementById("yeso").innerText=yeso.toFixed(2);
+
+}
+
+function copiar(){
+
+var texto="Agua: "+document.getElementById("agua").innerText+
+" ml | Yeso: "+document.getElementById("yeso").innerText+" g";
+
+navigator.clipboard.writeText(texto);
+
+alert("Resultado copiado");
+}
+
+function limpiar(){
+
+document.querySelectorAll("input").forEach(i=>i.value="");
+
+document.getElementById("agua").innerText=0;
+document.getElementById("yeso").innerText=0;
+
+}
+
+function modoOscuro(){
+
+document.body.classList.toggle("dark");
 
 }
 
